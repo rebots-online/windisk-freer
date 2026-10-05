@@ -1,0 +1,18 @@
+verify-licensing.py
+  h_30b36d78271bb4 41
+CHECKLIST.md
+  h_30b36d78271bb4 27
+disk_occupancy.py
+  h_30b36d78271bb4 370,392-393,399,406-415,417,420-433,437-441,445
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5f9b6ed9230fb8ff01dad5cced3007fd6c43e9cb",
+  "prompts": {},
+  "humans": {
+    "h_30b36d78271bb4": {
+      "author": "Robin L. M. Cheung, MBA <robin@robin.mba>"
+    }
+  }
+}
