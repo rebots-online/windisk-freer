@@ -28,12 +28,12 @@
   initial commit, push. Ignore __pycache__, *.bak, .codegraph/,
   packaging/build/ + unstamped exe (CC12: unstamped binaries must not be
   tracked; CC13: no GitHub LFS).
-- [ ] Menubar compliance (RobinsAI CLAUDE spec §Standard Menu Structure):
+- ✅ Menubar compliance (RobinsAI CLAUDE spec §Standard Menu Structure):
   File | Edit | View | Help; License + About under Help; About shows
   Copyright + License + Version+Build; status bar bottom-right shows
   v<version.txt> (CC7). Commit `v0.1.53003: ` prefixed (CC9) + push.
-- [ ] Splash compliance: name + v<version.txt> + copyright line.
-  Commit + push.
+- ✅ Splash compliance: name + v<version.txt> + copyright + init line.
+  Committed + pushed.
 
 Future: $MFT raw-read mode (WizTree method, admin required) for
 seconds-not-minutes full-disk scans.
