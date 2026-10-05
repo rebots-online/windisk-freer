@@ -1,0 +1,39 @@
+.gitignore
+  s_7b1ff42357fcf6::t_f89eb2220c0817 1-7
+CHECKLIST.md
+  s_7b1ff42357fcf6::t_7b71ac9653801f 1-39
+disk_occupancy.py
+  s_7b1ff42357fcf6::t_2005468b949f75 1-643
+packaging/appxmanifest.xml
+  s_7b1ff42357fcf6::t_4774099cbd7a5b 1-48
+packaging/disk_occupancy.spec
+  s_7b1ff42357fcf6::t_ea58b304971682 1-32
+packaging/disk_occupancy_onedir.spec
+  s_7b1ff42357fcf6::t_3e99866327af0a 1-36
+packaging/installer.iss
+  s_7b1ff42357fcf6::t_6f5f90a61ced98 1-39
+packaging/installer.nsi
+  s_7b1ff42357fcf6::t_91c0ee6c1ec3ee 1-65
+packaging/version_info.txt
+  s_7b1ff42357fcf6::t_096ca0496932b1 1-28
+verify-licensing.py
+  s_7b1ff42357fcf6::t_2efb9be0f1a106 1-43
+version.txt
+  s_7b1ff42357fcf6::t_6c6da3ffd839ab 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fff9e153b60ce26786ecdc94e648b8c33e8de44b",
+  "prompts": {},
+  "sessions": {
+    "s_7b1ff42357fcf6": {
+      "agent_id": {
+        "tool": "devin",
+        "id": "s_7b1ff42357fcf6",
+        "model": "unknown"
+      },
+      "human_author": "Robin L. M. Cheung, MBA <robin@robin.mba>"
+    }
+  }
+}
