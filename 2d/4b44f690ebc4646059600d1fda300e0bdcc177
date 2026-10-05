@@ -1,0 +1,25 @@
+disk_occupancy.py
+  h_30b36d78271bb4 657,661-664
+  s_0ec8a05293fa6e::t_cd535134b5c4b0 660,665
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2d4b44f690ebc4646059600d1fda300e0bdcc177",
+  "prompts": {},
+  "humans": {
+    "h_30b36d78271bb4": {
+      "author": "Robin L. M. Cheung, MBA <robin@robin.mba>"
+    }
+  },
+  "sessions": {
+    "s_0ec8a05293fa6e": {
+      "agent_id": {
+        "tool": "devin",
+        "id": "s_0ec8a05293fa6e",
+        "model": "unknown"
+      },
+      "human_author": "Robin L. M. Cheung, MBA <robin@robin.mba>"
+    }
+  }
+}
