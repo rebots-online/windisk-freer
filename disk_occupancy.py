@@ -654,11 +654,15 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
     app.setStyleSheet(DARK_STYLE)
-    pix = QPixmap(400, 180)
+    pix = QPixmap(460, 200)
     pix.fill(QColor("#1d2023"))
     splash = QSplashScreen(pix)
-    splash.showMessage(f"{APP_NAME}\n{app_version()}",
-                       Qt.AlignCenter, QColor("#e8e8e8"))
+    splash.showMessage(
+        f"{APP_NAME} {app_version()}\n"
+        "Per-disk, per-folder space occupancy — select to delete.\n"
+        "(c) 2026 Robin L. M. Cheung, MBA. All rights reserved.\n\n"
+        "Please wait… initializing…",
+        Qt.AlignCenter, QColor("#e8e8e8"))
     splash.show()
     app.processEvents()
     w = Main()
