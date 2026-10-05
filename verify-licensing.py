@@ -38,6 +38,6 @@ print('title:', w.windowTitle())
 print('tier label:', w.tier_label.text())
 menus = [a.text() for a in w.menuBar().actions()]
 print('menus:', menus)
-assert menus == ['&File', '&Tools', '&Help'], menus
+assert menus == ['&File', '&Edit', '&View', '&Help'], menus
 assert ver in w.windowTitle()
 print('ALL CHECKS PASSED')

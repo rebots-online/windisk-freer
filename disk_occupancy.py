@@ -340,7 +340,6 @@ class Main(QMainWindow):
         self._build_ui()
 
     def _build_ui(self):
-        self._build_menus()
         tb = QToolBar()
         tb.setMovable(False)
         for d in fixed_drives():
@@ -368,6 +367,7 @@ class Main(QMainWindow):
         for i, w in ((1, 110), (2, 70), (3, 90)):
             self.tree.setColumnWidth(i, w)
         self.tree.selectionModel().selectionChanged.connect(self._tree_sel)
+        self._build_menus()
 
         self.map = Treemap()
         self.map.clicked.connect(self._map_sel)
@@ -389,30 +389,60 @@ class Main(QMainWindow):
         lay.addWidget(self.progress)
         self.tier_label = QLabel()
         lay.addWidget(self.tier_label)
+        ver_label = QLabel(app_version())
+        lay.addWidget(ver_label)
         self.statusBar().addWidget(bar, 1)
         self._path = None
         self._update_tier()
 
     # ----------------------------------------------------------- menus
+    # Standard menu structure (windowed apps): File | Edit | View | Help
     def _build_menus(self):
         mb = self.menuBar()
         m_file = mb.addMenu("&File")
         m_file.addAction("Scan folder…", self.pick_folder)
-        m_file.addAction("Rescan", self.rescan)
         m_file.addSeparator()
         m_file.addAction("Exit", self.close)
-        m_tools = mb.addMenu("&Tools")
-        m_tools.addAction("License…", self._license_dialog)
+        m_edit = mb.addMenu("&Edit")
+        m_edit.addAction("Copy path", self._copy_selected_path)
+        m_edit.addSeparator()
+        m_edit.addAction("Delete (Recycle Bin)", self._delete_selected)
+        m_view = mb.addMenu("&View")
+        m_view.addAction("Rescan", self.rescan)
+        m_view.addAction("Stop", self.stop)
+        m_view.addSeparator()
+        m_view.addAction("Expand all", self.tree.expandAll)
+        m_view.addAction("Collapse all", self.tree.collapseAll)
         m_help = mb.addMenu("&Help")
+        m_help.addAction("License…", self._license_dialog)
         m_help.addAction(f"About {APP_NAME}", self._about)
+
+    def _selected_node(self):
+        idxs = self.tree.selectionModel().selectedRows()
+        return idxs[0].internalPointer() if idxs else None
+
+    def _copy_selected_path(self):
+        node = self._selected_node()
+        if node is not None:
+            QApplication.clipboard().setText(node.path)
+
+    def _delete_selected(self):
+        node = self._selected_node()
+        if node is not None:
+            self._delete(node)
 
     def _about(self):
         from PySide6.QtCore import qVersion
         lic = LICENSING.load()
+        license_row = (f"Pro — {lic.email} ("
+                       + ("perpetual" if lic.perpetual
+                          else "expires " + time.strftime(
+                              "%Y-%m-%d", time.localtime(lic.expires)))
+                       + ")") if lic else "Free — scan/view only"
         rows = [
             f"<h3>{APP_NAME} {app_version()}</h3>",
             "<p>Per-disk, per-folder space occupancy — select to delete.</p>",
-            f"<p>Tier: <b>{'Pro — ' + lic.email if lic else 'Free'}</b></p>",
+            f"<p>License: <b>{license_row}</b></p>",
             f"<p>Qt (UI framework): {qVersion()}</p>",
             "<p>(c) 2026 Robin L. M. Cheung, MBA. All rights reserved.</p>",
         ]

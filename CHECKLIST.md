@@ -24,7 +24,7 @@
 
 ## Session 2026-10-05 — git init + UI compliance
 
-- [ ] git init (master), origin = github.com/rebots-online/windisk-freer,
+- ✅ git init (master), origin = github.com/rebots-online/windisk-freer,
   initial commit, push. Ignore __pycache__, *.bak, .codegraph/,
   packaging/build/ + unstamped exe (CC12: unstamped binaries must not be
   tracked; CC13: no GitHub LFS).
