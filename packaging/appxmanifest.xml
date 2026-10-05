@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- MSIX manifest for Microsoft Store submission.
+     BEFORE BUILDING: reserve the app in Partner Center, then replace:
+       - Identity Name        → Package/Identity/Name from Partner Center
+       - Publisher            → Package/Identity/Publisher (CN=... GUID form)
+       - PublisherDisplayName → your Partner Center display name
+     Build the payload with the ONEDIR spec (onedir, not onefile — MSIX
+     packs loose files; onefile works but double-unpacks at runtime):
+       pyinstaller disk_occupancy_onedir.spec
+       makeappx pack /d dist\DiskOccupancy /p dist\DiskOccupancy.msix
+       signtool sign /fd SHA256 /a /f cert.pfx /p PASS dist\DiskOccupancy.msix
+     For Store submission Partner Center can sign; sideloading needs
+     your own cert trusted by the installer's machine. -->
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+         xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+         xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities">
+  <Identity Name="YOUR-PARTNER-CENTER-NAME"
+            Publisher="CN=YOUR-PUBLISHER-GUID"
+            Version="0.1.0.0" />
+  <Properties>
+    <DisplayName>Disk Occupancy</DisplayName>
+    <PublisherDisplayName>Robin L. M. Cheung</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0"
+                        MaxVersionTested="10.0.26300.0" />
+  </Dependencies>
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+  <Applications>
+    <Application Id="DiskOccupancy"
+                 Executable="DiskOccupancy.exe"
+                 EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="Disk Occupancy"
+                          Description="Per-disk space analyzer and cleaner"
+                          BackgroundColor="#1d2023"
+                          Square150x150Logo="Assets\Square150x150Logo.png"
+                          Square44x44Logo="Assets\Square44x44Logo.png" />
+    </Application>
+  </Applications>
+  <Capabilities>
+    <!-- runFullTrust lets the packaged desktop app run unsandboxed —
+         required for scanning arbitrary paths -->
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

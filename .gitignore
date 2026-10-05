@@ -1,0 +1,7 @@
+__pycache__/
+*.py[co]
+*.bak
+*.bak.*
+.codegraph/
+packaging/build/
+packaging/dist/
