@@ -21,9 +21,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                 os.pardir, "licensing"))
 import rlmc_license
 
-from PySide6.QtCore import (QAbstractItemModel, QModelIndex, QObject, Qt,
-                            QThread, Signal)
-from PySide6.QtGui import QColor, QFont, QPainter, QPen, QPixmap
+from PySide6.QtCore import (QAbstractItemModel, QModelIndex, QObject,
+                            QSettings, Qt, QThread, Signal)
+from PySide6.QtGui import QColor, QCursor, QFont, QPainter, QPen, QPixmap
 from PySide6.QtWidgets import (QApplication, QDialog, QHBoxLayout,
                                QHeaderView, QLabel, QLineEdit, QMainWindow,
                                QMenu, QMessageBox, QProgressBar,
@@ -63,6 +63,7 @@ class Node:
     children: list = field(default_factory=list)
     parent: object = None
     denied: bool = False
+    check: int = 0          # 0 unchecked / 1 partial / 2 checked
 
     def row(self):
         return self.parent.children.index(self) if self.parent else 0
@@ -149,21 +150,31 @@ class Scanner(QThread):
 # ---------------------------------------------------------------- tree model
 class TreeModel(QAbstractItemModel):
     COLS = ("Name", "Size", "%", "Files")
+    selChanged = Signal(int, int, int)      # bytes, files, item count
 
     def __init__(self):
         super().__init__()
         self.root = Node("", "", True)
+        self._checked = set()               # nodes with check == 2
 
     def set_root(self, root):
         self.beginResetModel()
         self.root = root
+        self._checked.clear()
         self.endResetModel()
+        self._emit_sel()
 
     def remove_subtree(self, node):
+        stack = [node]
+        while stack:
+            c = stack.pop()
+            self._checked.discard(c)
+            stack.extend(c.children)
         parent, row = node.parent, node.row()
         self.beginRemoveRows(self.index_for(parent), row, row)
         parent.children.remove(node)
         self.endRemoveRows()
+        self._fix_ancestors(parent)
         delta_size, delta_files = node.size, node.nfiles + (0 if node.is_dir else 1)
         p = parent
         while p is not None:
@@ -171,6 +182,62 @@ class TreeModel(QAbstractItemModel):
             p.nfiles -= delta_files
             p = p.parent
         self.layoutChanged.emit()
+        self._emit_sel()
+
+    # --- check / mark-for-deletion state ---
+    def flags(self, idx):
+        f = super().flags(idx)
+        if idx.isValid() and idx.column() == 0:
+            f |= Qt.ItemIsUserCheckable
+        return f
+
+    def setData(self, idx, value, role=Qt.EditRole):
+        if role == Qt.CheckStateRole and idx.isValid() and idx.column() == 0:
+            self._cascade_check(idx.internalPointer(), Qt.CheckState(value))
+            self.layoutChanged.emit()
+            self._emit_sel()
+            return True
+        return False
+
+    def _cascade_check(self, node, state):
+        s = int(state)
+        stack = [node]
+        while stack:
+            n = stack.pop()
+            self._checked.discard(n)
+            n.check = s
+            if s == 2:
+                self._checked.add(n)
+            stack.extend(n.children)
+        self._fix_ancestors(node.parent)
+
+    def _fix_ancestors(self, node):
+        while node is not None and node.parent is not None:
+            states = {c.check for c in node.children}
+            node.check = 2 if states == {2} else (0 if states == {0} else 1)
+            self._checked.discard(node)
+            if node.check == 2:
+                self._checked.add(node)
+            node = node.parent
+
+    def effective_checked(self):
+        """Topmost checked nodes — a checked node under a checked ancestor
+        is covered by it and does not count twice."""
+        out = []
+        for n in self._checked:
+            p = n.parent
+            while p is not None and p.check != 2:
+                p = p.parent
+            if p is None:
+                out.append(n)
+        return out
+
+    def _emit_sel(self):
+        eff = self.effective_checked()
+        self.selChanged.emit(
+            sum(n.size for n in eff),
+            sum(n.nfiles + (0 if n.is_dir else 1) for n in eff),
+            len(eff))
 
     def index_for(self, node):
         if node is self.root or node.parent is None:
@@ -223,6 +290,8 @@ class TreeModel(QAbstractItemModel):
                 return "100%" if n.parent else ""
             if c == 3:
                 return f"{n.nfiles:,}" if n.is_dir else ""
+        if role == Qt.CheckStateRole and c == 0:
+            return Qt.CheckState(n.check)
         if role == Qt.TextAlignmentRole and c in (1, 2, 3):
             return Qt.AlignRight | Qt.AlignVCenter
         if role == Qt.ForegroundRole and n.denied:
@@ -330,6 +399,44 @@ def fixed_drives():
     return drives or ["C:\\"]
 
 
+def _find_license_key_file() -> str | None:
+    """license.key next to the exe (frozen) or next to this script (dev)."""
+    bases = [os.path.dirname(os.path.abspath(__file__))]
+    if getattr(sys, "frozen", False):
+        bases.insert(0, os.path.dirname(sys.executable))
+    for base in bases:
+        p = os.path.join(base, "license.key")
+        try:
+            with open(p) as f:
+                return f.read()
+        except OSError:
+            continue
+    return None
+
+
+def _raw_license_key() -> str | None:
+    """Raw key string held in HKCU (for QR payload); None if unlicensed."""
+    try:
+        import winreg
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+                            r"Software\DiskOccupancy") as k:
+            return winreg.QueryValueEx(k, "LicenseKey")[0]
+    except (OSError, ImportError):
+        return None
+
+
+def _qr_pixmap(payload: str, scale: int = 4) -> QPixmap:
+    """Render payload as a QR QPixmap via segno (pure-python)."""
+    import io
+    import segno
+    buf = io.BytesIO()
+    segno.make(payload, error="m").save(buf, kind="png",
+                                        scale=scale, border=2)
+    pm = QPixmap()
+    pm.loadFromData(buf.getvalue())
+    return pm
+
+
 class Main(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -337,7 +444,21 @@ class Main(QMainWindow):
         self.resize(1200, 780)
         self.model = TreeModel()
         self.scanner = None
+        self.settings = QSettings("RobinsAI", "DiskOccupancy")
+        self._click_mode = self.settings.value("clickMode", "navigate")
+        self._auto_activate()
         self._build_ui()
+
+    def _auto_activate(self):
+        """Activate from license.key beside the app if nothing is registered."""
+        if LICENSING.load() is not None:
+            return
+        key = _find_license_key_file()
+        if key:
+            try:
+                LICENSING.save(key)
+            except ValueError:
+                pass
 
     def _build_ui(self):
         tb = QToolBar()
@@ -354,6 +475,11 @@ class Main(QMainWindow):
             b = QPushButton(label)
             b.clicked.connect(fn)
             tb.addWidget(b)
+        tb.addSeparator()
+        self.del_sel_btn = QPushButton("Delete selected")
+        self.del_sel_btn.setEnabled(False)
+        self.del_sel_btn.clicked.connect(self._delete_selected_set)
+        tb.addWidget(self.del_sel_btn)
         self.addToolBar(tb)
 
         self.tree = QTreeView()
@@ -367,6 +493,8 @@ class Main(QMainWindow):
         for i, w in ((1, 110), (2, 70), (3, 90)):
             self.tree.setColumnWidth(i, w)
         self.tree.selectionModel().selectionChanged.connect(self._tree_sel)
+        self.tree.clicked.connect(self._row_clicked)
+        self.model.selChanged.connect(self._on_sel_changed)
         self._build_menus()
 
         self.map = Treemap()
@@ -386,6 +514,9 @@ class Main(QMainWindow):
         lay = QHBoxLayout(bar)
         lay.setContentsMargins(6, 2, 6, 2)
         lay.addWidget(self.status, 1)
+        self.sel_label = QLabel()
+        self.sel_label.setVisible(False)
+        lay.addWidget(self.sel_label)
         lay.addWidget(self.progress)
         self.tier_label = QLabel()
         lay.addWidget(self.tier_label)
@@ -407,6 +538,12 @@ class Main(QMainWindow):
         m_edit.addAction("Copy path", self._copy_selected_path)
         m_edit.addSeparator()
         m_edit.addAction("Delete (Recycle Bin)", self._delete_selected)
+        m_edit.addAction("Delete selected items", self._delete_selected_set)
+        m_edit.addSeparator()
+        self.act_click_check = m_edit.addAction(
+            "Single-click marks for deletion", self._toggle_click_mode)
+        self.act_click_check.setCheckable(True)
+        self.act_click_check.setChecked(self._click_mode == "check")
         m_view = mb.addMenu("&View")
         m_view.addAction("Rescan", self.rescan)
         m_view.addAction("Stop", self.stop)
@@ -474,6 +611,22 @@ class Main(QMainWindow):
             lambda: QApplication.clipboard().setText(mh))
         row.addWidget(copy)
         lay.addLayout(row)
+        # QR for Biddlr billing / mobile activation: licensed machines show
+        # the key itself; unlicensed show the product+machine purchase payload.
+        payload = (_raw_license_key() if lic else
+                   f"RLMC-PURCHASE|{PRODUCT_ID}|machine={mh}")
+        try:
+            qr = QLabel()
+            qr.setPixmap(_qr_pixmap(payload))
+            qr.setAlignment(Qt.AlignCenter)
+            lay.addWidget(qr)
+            cap = "Scan to carry this license to mobile" if lic else \
+                  "Scan with Biddlr to buy a machine-bound Pro key"
+            note = QLabel(cap)
+            note.setAlignment(Qt.AlignCenter)
+            lay.addWidget(note)
+        except ImportError:
+            pass
         entry = QLineEdit()
         entry.setPlaceholderText("RLMC1.… license key")
         lay.addWidget(entry)
@@ -547,9 +700,121 @@ class Main(QMainWindow):
         menu.addAction("Open in Explorer", lambda: self._open(node))
         menu.addAction("Copy path", lambda: QApplication.clipboard().setText(node.path))
         menu.addSeparator()
+        mark = "Unmark" if node.check == 2 else "Mark for deletion"
+        menu.addAction(mark, lambda: self.model.setData(
+            idx.siblingAtColumn(0), Qt.Unchecked if node.check == 2
+            else Qt.Checked, Qt.CheckStateRole))
         menu.addAction(self.style().standardIcon(QStyle.SP_TrashIcon),
                        "Delete (Recycle Bin)", lambda: self._delete(node))
+        sel_count = len(self.model.effective_checked())
+        if sel_count:
+            menu.addAction(f"Delete selected ({sel_count} items)",
+                           self._delete_selected_set)
         menu.exec(self.tree.viewport().mapToGlobal(pos))
+
+    def _toggle_click_mode(self, checked):
+        self._click_mode = "check" if checked else "navigate"
+        self.settings.setValue("clickMode", self._click_mode)
+
+    def _row_clicked(self, idx):
+        """Single-click behavior (config item 'clickMode'): 'check' marks the
+        row for deletion, 'navigate' expands dirs. A click directly on the
+        checkbox indicator is already handled by Qt — detect and skip it."""
+        if not idx.isValid() or idx.column() != 0:
+            return
+        node = idx.internalPointer()
+        if self._click_mode == "check":
+            opt = self.tree.viewOptions()
+            opt.rect = self.tree.visualRect(idx)
+            chk = self.tree.style().subElementRect(
+                QStyle.SE_ItemViewItemCheckIndicator, opt, self.tree)
+            pos = self.tree.viewport().mapFromGlobal(QCursor.pos())
+            if chk.contains(pos):
+                return
+            self.model.setData(idx, Qt.Unchecked if node.check == 2
+                               else Qt.Checked, Qt.CheckStateRole)
+        elif node.is_dir:
+            self.tree.setExpanded(idx, not self.tree.isExpanded(idx))
+
+    def _on_sel_changed(self, nbytes, nfiles, nitems):
+        self.sel_label.setVisible(nitems > 0)
+        if nitems:
+            self.sel_label.setText(
+                f"Selected: {human(nbytes)} · {nfiles:,} files · {nitems} items")
+        self.del_sel_btn.setEnabled(nitems > 0)
+        self.del_sel_btn.setText(
+            f"Delete selected ({nitems})" if nitems else "Delete selected")
+
+    def _delete_selected_set(self):
+        nodes = self.model.effective_checked()
+        if not nodes:
+            return
+        if not LICENSING.is_pro:
+            self._pro_gate()
+            return
+        total = sum(n.size for n in nodes)
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Warning)
+        box.setWindowTitle("Delete selected")
+        box.setText(f"Send {len(nodes)} selected items to the Recycle Bin?"
+                    f"\n\nTotal: {human(total)}")
+        box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        if box.exec() != QMessageBox.Yes:
+            return
+        from send2trash import send2trash
+        done, failed = 0, []
+        for n in nodes:
+            try:
+                send2trash(n.path)
+            except Exception as exc:
+                failed.append((n, exc))
+                continue
+            self.model.remove_subtree(n)
+            done += 1
+        if failed:
+            done += self._delete_permanent_prompt(
+                [n for n, _ in failed],
+                f"{len(failed)} item(s) can't be recycled "
+                f"(e.g. {failed[0][0].path}: {failed[0][1]}).\n\n"
+                "The drive may have no Recycle Bin, or the item may be in "
+                "use or protected.")
+        self.map.set_root(self.model.root)
+        msg = f"Deleted {done} of {len(nodes)} selected ({human(total)})"
+        if done < len(nodes):
+            msg += f" — {len(nodes) - done} skipped"
+        self.status.setText(msg)
+
+    @staticmethod
+    def _has_recycle_bin(path):
+        drive = os.path.splitdrive(os.path.abspath(path))[0]
+        return bool(drive) and drive[1:2] == ":" and \
+            os.path.exists(drive + "\\$RECYCLE.BIN")
+
+    def _delete_permanent_prompt(self, nodes, reason):
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Warning)
+        box.setWindowTitle("Delete permanently")
+        detail = "\n".join(n.path for n in nodes[:10])
+        if len(nodes) > 10:
+            detail += f"\n… and {len(nodes) - 10} more"
+        box.setText(f"{reason}\n\nDelete PERMANENTLY instead? "
+                    "(cannot be undone)\n\n" + detail)
+        box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        if box.exec() != QMessageBox.Yes:
+            return 0
+        import shutil
+        done, errs = 0, []
+        for n in nodes:
+            try:
+                shutil.rmtree(n.path) if n.is_dir else os.remove(n.path)
+            except OSError as e:
+                errs.append(f"{n.path}: {e}")
+                continue
+            self.model.remove_subtree(n)
+            done += 1
+        if errs:
+            QMessageBox.critical(self, "Delete failed", "\n".join(errs[:10]))
+        return done
 
     def _open(self, node):
         target = node.path if node.is_dir else os.path.dirname(node.path)
@@ -575,39 +840,50 @@ class Main(QMainWindow):
         self.tree.scrollTo(idx)
         self.map.set_selected(node)
 
+    def _pro_gate(self):
+        box = QMessageBox(self)
+        box.setWindowTitle("Pro feature")
+        box.setText("Deleting files requires Disk Occupancy Pro.\n\n"
+                    "Enter a license key to unlock.")
+        activate = box.addButton("Activate…", QMessageBox.AcceptRole)
+        box.addButton(QMessageBox.Cancel)
+        box.exec()
+        if box.clickedButton() is activate:
+            self._license_dialog()
+
     def _delete(self, node):
         if node.parent is None:
             return
         if not LICENSING.is_pro:
-            box = QMessageBox(self)
-            box.setWindowTitle("Pro feature")
-            box.setText("Deleting files requires Disk Occupancy Pro.\n\n"
-                        "Enter a license key to unlock.")
-            activate = box.addButton("Activate…", QMessageBox.AcceptRole)
-            box.addButton(QMessageBox.Cancel)
-            box.exec()
-            if box.clickedButton() is activate:
-                self._license_dialog()
+            self._pro_gate()
             return
+        recyclable = self._has_recycle_bin(node.path)
         box = QMessageBox(self)
         box.setIcon(QMessageBox.Warning)
-        box.setWindowTitle("Delete")
-        box.setText(f"Send to Recycle Bin?\n\n{node.path}\n\n{human(node.size)}"
-                    + (f", {node.nfiles:,} files" if node.is_dir else ""))
+        box.setWindowTitle("Delete" if recyclable else "Delete permanently")
+        box.setText(
+            (f"Send to Recycle Bin?\n\n{node.path}\n\n{human(node.size)}"
+             if recyclable else
+             f"This drive has no Recycle Bin — delete PERMANENTLY?\n\n"
+             f"{node.path}\n\n{human(node.size)}")
+            + (f", {node.nfiles:,} files" if node.is_dir else ""))
         box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         if box.exec() != QMessageBox.Yes:
             return
-        try:
-            from send2trash import send2trash
-            send2trash(node.path)
-        except Exception as exc:
-            box2 = QMessageBox(self)
-            box2.setIcon(QMessageBox.Critical)
-            box2.setWindowTitle("Recycle failed")
-            box2.setText(f"Recycle Bin refused:\n{exc}\n\nDelete PERMANENTLY instead?")
-            box2.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-            if box2.exec() != QMessageBox.Yes:
+        if recyclable:
+            try:
+                from send2trash import send2trash
+                send2trash(node.path)
+            except Exception as exc:
+                if self._delete_permanent_prompt(
+                        [node],
+                        f"Recycle Bin refused ({node.path}: {exc}) — the item "
+                        "may be in use or protected."):
+                    self.status.setText(
+                        f"Deleted {node.path} ({human(node.size)}) permanently")
+                self.map.set_root(self.model.root)
                 return
+        else:
             try:
                 if node.is_dir:
                     import shutil

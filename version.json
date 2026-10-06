@@ -1,0 +1,10 @@
+{
+  "version": "1.2.54324",
+  "versionBase": "1.2",
+  "buildNumber": "54324",
+  "versionCode": 100002,
+  "buildDate": "2026-10-06T00:04:56.2332008-04:00",
+  "productName": "Disk Occupancy",
+  "internalName": "disk-occupancy",
+  "packageName": "mba.robin.diskoccupancy"
+}
