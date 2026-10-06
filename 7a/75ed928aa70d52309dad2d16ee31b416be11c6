@@ -1,0 +1,30 @@
+CHECKLIST.md
+  h_30b36d78271bb4 40-142
+DOCS/ARCHITECTURE.md
+  h_30b36d78271bb4 1-241
+DOCS/design/settings-gemini-3.5-flash-lite.html
+  s_ebfdfeed54c407::t_f1ffb57c3a9020 1-436
+DOCS/design/settings-gemini-3.8-flash.html
+  s_ebfdfeed54c407::t_ae5a8e5572c909 1-499
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7a75ed928aa70d52309dad2d16ee31b416be11c6",
+  "prompts": {},
+  "humans": {
+    "h_30b36d78271bb4": {
+      "author": "Robin L. M. Cheung, MBA <robin@robin.mba>"
+    }
+  },
+  "sessions": {
+    "s_ebfdfeed54c407": {
+      "agent_id": {
+        "tool": "devin",
+        "id": "s_ebfdfeed54c407",
+        "model": "unknown"
+      },
+      "human_author": "Robin L. M. Cheung, MBA <robin@robin.mba>"
+    }
+  }
+}
