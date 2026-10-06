@@ -1,0 +1,37 @@
+scripts/kstore-note-prohibited-smoke-tests-d20261005.json
+  h_30b36d78271bb4 1
+disk_occupancy.py
+  h_30b36d78271bb4 25-26,66,153,158,163,165,168-172,177,185,187-240,293-294,402-439,447-449,452-461,478-482,496-497,517-519,541-546,614-629,703-706,709-712,715-817,843-844,858,860,863,865-868,873,878-884,886
+  s_875dac77ebd1e5::t_8b9dea3b19a91c 24,186,462,818,845-853,864,869,874-877
+scripts/build-release.ps1
+  h_30b36d78271bb4 1-73
+scripts/make-msix-assets-d20261005.py
+  s_875dac77ebd1e5::t_b6ee796cfe0301 1-78
+scripts/update-version.ps1
+  s_875dac77ebd1e5::t_e7c06c79145a3e 1-171
+version.json
+  s_875dac77ebd1e5::t_c478c1412a824a 1-10
+version.txt
+  s_875dac77ebd1e5::t_4c37d7f0951af5 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6fcab453b7f4e57ec5b965053f3f2573767a63f3",
+  "prompts": {},
+  "humans": {
+    "h_30b36d78271bb4": {
+      "author": "Robin L. M. Cheung, MBA <robin@robin.mba>"
+    }
+  },
+  "sessions": {
+    "s_875dac77ebd1e5": {
+      "agent_id": {
+        "tool": "devin",
+        "id": "s_875dac77ebd1e5",
+        "model": "unknown"
+      },
+      "human_author": "Robin L. M. Cheung, MBA <robin@robin.mba>"
+    }
+  }
+}
