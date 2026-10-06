@@ -1,0 +1,16 @@
+version.json
+  h_30b36d78271bb4 2-6
+version.txt
+  h_30b36d78271bb4 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1321c08970fa2fad3e212909a56a06f0bbb6cc76",
+  "prompts": {},
+  "humans": {
+    "h_30b36d78271bb4": {
+      "author": "Robin L. M. Cheung, MBA <robin@robin.mba>"
+    }
+  }
+}
