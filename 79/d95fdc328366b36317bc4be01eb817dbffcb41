@@ -1,0 +1,17 @@
+DOCS/ARCHITECTURE.md
+  h_30b36d78271bb4 242,246-260,266-268
+  h_30b36d78271bb4 243-245,261-262
+CHECKLIST.md
+  h_30b36d78271bb4 156-159
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "79d95fdc328366b36317bc4be01eb817dbffcb41",
+  "prompts": {},
+  "humans": {
+    "h_30b36d78271bb4": {
+      "author": "Robin L. M. Cheung, MBA <robin@robin.mba>"
+    }
+  }
+}
