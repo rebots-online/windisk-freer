@@ -1,0 +1,12 @@
+THIRD-PARTY NOTICE — Qt for Python (PySide6)
+
+This application uses PySide6 / Qt 6, which is licensed under the GNU
+Lesser General Public License version 3 (LGPLv3).
+
+- Qt source code: https://download.qt.io/official_releases/qt/
+- LGPLv3 license text: https://www.gnu.org/licenses/lgpl-3.0.html
+
+PySide6 is used as an unmodified shared library. In compliance with
+LGPLv3, you may replace the Qt libraries with your own build (e.g. by
+repackaging with a different PySide6 wheel). This application itself is
+proprietary; the LGPL applies only to the Qt/PySide6 components.

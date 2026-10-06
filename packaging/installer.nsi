@@ -1,14 +1,18 @@
 ; NSIS installer — Disk Occupancy
 ; Build: makensis installer.nsi   (run from packaging\ dir)
-; Produces: dist\installer\DiskOccupancy-0.1.0-setup.exe
+; Produces: ..\dist\installer\Disk Occupancy-0.1.53003-setup.exe
 !define APPNAME "Disk Occupancy"
-!define APPVERSION "0.1.0"
+; Stamped output — version comes from version.txt (written by
+; scripts/update-version.ps1 during build-release.ps1); never hand-edit.
+!ifndef APPVERSION
+  !define /file APPVERSION "..\version.txt"
+!endif
 !define PUBLISHER "Robin L. M. Cheung, MBA"
 !define APPEXE "DiskOccupancy.exe"
 
 Unicode true
 Name "${APPNAME}"
-OutFile "dist\installer\${APPNAME}-${APPVERSION}-setup.exe"
+OutFile "..\dist\installer\${APPNAME}-${APPVERSION}-setup.exe"
 InstallDir "$LOCALAPPDATA\Programs\${APPNAME}"
 RequestExecutionLevel user          ; per-user install — no UAC prompt
 SetCompressor /SOLID lzma
@@ -26,7 +30,7 @@ SetCompressor /SOLID lzma
 
 Section "Install"
     SetOutPath "$INSTDIR"
-    File "dist\${APPEXE}"
+    File "..\dist\${APPEXE}"
     ; LGPL/Qt notices + product license ship alongside the binary
     File /nonfatal "..\LICENSE.txt"
     File /nonfatal "..\LICENSE-Qt-LGPL.txt"

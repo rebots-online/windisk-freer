@@ -5,3 +5,7 @@ __pycache__/
 .codegraph/
 packaging/build/
 packaging/dist/
+dist/
+build/
+license.key
+*.lic

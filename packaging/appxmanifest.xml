@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- MSIX manifest for Microsoft Store submission.
+     Version is a STAMPED OUTPUT — build-release.ps1 rewrites Identity/@Version
+     in the staged copy at pack time; the value below is a placeholder.
+     Canonical version = version.txt (stamper: scripts/update-version.ps1).
      BEFORE BUILDING: reserve the app in Partner Center, then replace:
        - Identity Name        → Package/Identity/Name from Partner Center
        - Publisher            → Package/Identity/Publisher (CN=... GUID form)
@@ -14,9 +17,9 @@
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
          xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
          xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities">
-  <Identity Name="YOUR-PARTNER-CENTER-NAME"
-            Publisher="CN=YOUR-PUBLISHER-GUID"
-            Version="0.1.0.0" />
+  <Identity Name="RobinCheung.DiskOccupancy"
+            Publisher="CN=DiskOccupancy"
+            Version="0.1.53003.0" />
   <Properties>
     <DisplayName>Disk Occupancy</DisplayName>
     <PublisherDisplayName>Robin L. M. Cheung</PublisherDisplayName>
