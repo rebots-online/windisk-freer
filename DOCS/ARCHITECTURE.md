@@ -225,11 +225,88 @@ license: Help -> License… -> _license_dialog (machine_hash shown for
   Rejected: archive-bit mark-then-sweep (`attrib +A`, `del /a:a`,
   `robocopy /IA:A`) — a real Windows idiom but built for incremental
   backups (`xcopy /m`); redundant with the in-memory checkbox model.
-  Rejected: elevated delete helper (operator veto; admin ≠
-  TrustedInstaller anyway).
+  Rejected (SUPERSEDED by AD-11, operator-directed 2026-10-06):
+  elevated delete helper for the ordinary-delete path — admin ≠
+  TrustedInstaller and it was the wrong fix for the no-recycle-bin
+  failure class. Session elevation returns in AD-11 as an opt-in for
+  system-owned targets where it IS required.
 - **AD-7** Runtime identity override via `.env` (`WINDISK_APP_NAME`,
   `WINDISK_PRODUCT_ID`) — loaded by `_load_env()` before constants bind;
   `.env` gitignored, `.env.example` committed.
+
+- **AD-11** (PROPOSED — pending signoff) Windows.old + system space
+  reclaim: a "System Reclaim" surface (Tools menu) listing detected
+  reclaimable categories with sizes, checkboxes, and one Reclaim
+  button. Pro-gated (it is a delete-class operation, AD-3).
+
+  *Elevation foundation (one UAC per session).* System-owned targets
+  cannot be deleted unelevated — `Windows.old`, `C:\Windows\Temp`,
+  SoftwareDistribution, WinSxS, hiberfil all require admin, and the
+  silent/automated cleanup handlers require it too. Design: UAC fires
+  once — either when the user enables "Allow administrator actions
+  this session" (`allowElevate`, persisted but resets per session —
+  the checkbox itself triggers the prompt so consent and elevation
+  are the same gesture) or on the first reclaim/delete that needs
+  it. Elevated work is dispatched to a single cached elevated
+  channel for the rest of the session: primary = elevated
+  `IFileOperation`/`ShellExecute` via the COM elevation moniker
+  (`Elevation:Administrator!new:{3AD05575-8857-4850-9277-11B85BDB8E09}`);
+  fallback = a persistent `runas` helper process (same exe,
+  `--elevated-worker`, named-pipe job/result protocol, random
+  pipe name). If UAC is declined the checkbox reverts and affected
+  rows are marked "needs administrator". Admin still ≠
+  TrustedInstaller — the tier list below is ordered so the OS's own
+  handlers (which carry the right ownership/ACL logic) run first.
+
+  *Windows.old (`C:\Windows.old`, plus upgrade remnants
+  `$Windows.~BT`, `$Windows.~WS`, `C:\ESD\Windows`) — three tiers:*
+  - Tier 1 (default): hand off to Microsoft's own handler —
+    `cleanmgr.exe /AUTOCLEAN` elevated (silent, removes Previous
+    Windows Installation + related handlers) or the `SilentCleanup`
+    scheduled task. Correct ACL/ownership handling by definition;
+    headless; also sweeps other upgrade leftovers.
+  - Tier 2 (fallback when Tier 1 reports nothing removed):
+    elevated brute force — `takeown /f <path> /r /d y` +
+    `icacls <path> /reset /t /c /q` then the configured delete
+    engine (robomirror). Explicitly labeled "slow, deep ACL churn —
+    last resort"; progress + cancel required (~200k-file trees).
+  - Tier 3 (always): open the sanctioned UI —
+    `ms-settings:storagesense` / interactive `cleanmgr` — if
+    automation fails outright. Never silently no-op.
+  - Confirmation states plainly: deleting Windows.old permanently
+    removes the option to roll back the last Windows upgrade (the
+    OS would auto-delete it ~10 days post-upgrade anyway).
+
+  *Other reclaim categories (flat list, per-row size + badge):*
+  - Recycle bins, all fixed drives — `SHEmptyRecycleBin`;
+    unelevated for the caller's own items. Badge: safe.
+  - `%TEMP%` + `C:\Windows\Temp` — delete engine; Windows\Temp
+    needs the elevated channel. Badge: safe / admin.
+  - `C:\Windows\SoftwareDistribution\Download` (Update cache) —
+    elevated; stop `wuauserv` first, restart after. Badge: admin.
+  - Delivery Optimization cache — elevated. Badge: admin.
+  - Memory dumps (`MEMORY.DMP`, `Minidump\`) — elevated. Badge:
+    safe after admin.
+  - WinSxS component cleanup — `Dism.exe /online /Cleanup-Image
+    /StartComponentCleanup`, elevated; optional `/ResetBase`
+    checkbox with warning that installed updates become
+    uninstallable (permanent). Badge: admin + caution.
+  - Hibernation — `powercfg /h off`, elevated; functional change:
+    disables hibernate AND Fast Startup; checkbox off by default
+    with the consequence stated in the row. Badge: functional
+    change.
+  - Rejected: pagefile resizing/deletion — performance
+    destabilisation risk vastly outweighs the reclaim.
+
+  *Detection/sizing:* on drive load, probe the fixed well-known
+  paths above; sizes come from the existing scandir walk —
+  ACL-denied subtrees report a `>=` lower bound rather than a fake
+  exact figure. Windows.old rows that need admin to size are
+  marked "size unknown until elevated".
+
+  *Failure policy unchanged (AD-2/AD-10):* per-category result
+  reported; failed rows stay checked; UAC-declined is a stated
+  outcome, not a crash.
 
 ## 6. Outstanding
 

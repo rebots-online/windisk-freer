@@ -148,3 +148,14 @@ seconds-not-minutes full-disk scans.
   runs `defrag <drive>: /L` post-batch (admin-only — NTFS already
   TRIMs at unlink, so it's opt-in). Edit-menu "Delete method" submenu.
   Failed items stay checked, reported.
+- [ ] AD-11 (proposed, needs signoff): "System Reclaim" surface —
+  Tools-menu list of detected reclaimable categories (Windows.old +
+  $Windows.~BT/~WS/ESD, recycle bins, temp dirs, Update cache,
+  Delivery Optimization, memory dumps, WinSxS cleanup, hibernation
+  opt-in) with per-row size + safe/admin/functional-change badge.
+  Elevation foundation: one UAC per session via `allowElevate`
+  checkbox (the gesture IS the prompt) → cached elevated
+  IFileOperation channel, runas-helper fallback. Windows.old
+  tiers: cleanmgr /AUTOCLEAN or SilentCleanup task (default) →
+  elevated takeown/icacls + engine (labeled last resort) →
+  sanctioned Settings UI. Pagefile rejected. Pro-gated per AD-3.
