@@ -161,3 +161,11 @@ seconds-not-minutes full-disk scans.
   tiers: cleanmgr /AUTOCLEAN or SilentCleanup task (default) →
   elevated takeown/icacls + engine (labeled last resort) →
   sanctioned Settings UI. Pagefile rejected. Pro-gated per AD-3.
+- [X] BUGFIX (operator-reported, v1.6.54756): checkbox click,
+  context-menu "Mark for deletion", and Delete-selected all dead —
+  root cause: `@dataclass` on `Node` defaulted `eq=True` →
+  `__hash__ = None` → unhashable → `TypeError` inside every Qt slot
+  touching `self._checked` set ops (`_cascade_check`,
+  `effective_checked`, `remove_subtree`), silently swallowed in the
+  windowed exe. Fix: `@dataclass(eq=False)` (identity hash is the
+  correct semantics for tree nodes in a set). Verified hashable.

@@ -53,7 +53,7 @@ HIDDEN = {"system volume information", "$recycle.bin", "recovery"}
 
 
 # ---------------------------------------------------------------- model data
-@dataclass
+@dataclass(eq=False)   # identity hash — nodes live in the _checked set
 class Node:
     name: str
     path: str
