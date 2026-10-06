@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Disk Occupancy - Settings</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Inter & JetBrains Mono Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration matching Design System -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container-highest": "#323538",
+            "surface-tint": "#a5c9fa",
+            "outline-variant": "#43474e",
+            "on-primary-fixed": "#001c37",
+            "on-surface": "#e1e2e6",
+            "primary": "#a5c9fa",
+            "tertiary-fixed": "#d3e4ff",
+            "on-tertiary-container": "#bfd9ff",
+            "error": "#ffb4ab",
+            "error-container": "#93000a",
+            "surface-bright": "#37393d",
+            "surface-variant": "#323538",
+            "on-tertiary-fixed-variant": "#2e4868",
+            "primary-container": "#3a5f8a",
+            "on-secondary-fixed-variant": "#134a72",
+            "on-primary-fixed-variant": "#214872",
+            "on-tertiary-fixed": "#001c38",
+            "inverse-on-surface": "#2e3134",
+            "inverse-primary": "#3b608b",
+            "outline": "#8d9199",
+            "on-secondary": "#003354",
+            "tertiary-container": "#455f80",
+            "surface-dim": "#111417",
+            "surface-container-lowest": "#0b0f11",
+            "on-surface-variant": "#c3c6d0",
+            "secondary-fixed-dim": "#9dcbfa",
+            "secondary": "#9dcbfa",
+            "tertiary": "#aec8ef",
+            "background": "#111417",
+            "primary-fixed-dim": "#a5c9fa",
+            "primary-fixed": "#d2e4ff",
+            "on-error": "#690005",
+            "tertiary-fixed-dim": "#aec8ef",
+            "on-secondary-container": "#8fbdeb",
+            "inverse-surface": "#e1e2e6",
+            "on-primary": "#00325a",
+            "secondary-fixed": "#cfe5ff",
+            "secondary-container": "#174c74",
+            "surface-container-low": "#191c1f",
+            "on-secondary-fixed": "#001d33",
+            "on-primary-container": "#bdd8ff",
+            "surface": "#111417",
+            "surface-container": "#1d2023",
+            "surface-container-high": "#272a2d",
+            "on-tertiary": "#163250",
+            "on-error-container": "#ffdad6",
+            "on-background": "#e1e2e6"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-sm": "0.5rem",
+            "margin": "1.5rem",
+            "margin-compact": "1rem",
+            "space-xl": "1.5rem",
+            "gutter": "1rem",
+            "space-lg": "1rem",
+            "space-md": "0.75rem",
+            "gutter-compact": "0.5rem",
+            "space-xs": "0.25rem"
+          },
+          fontFamily: {
+            "body-sm": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-xl": ["Inter"],
+            "code-sm": ["JetBrains Mono"],
+            "headline-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-md": ["Inter"],
+            "title-md": ["Inter"],
+            "title-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-md": ["Inter"]
+          },
+          fontSize: {
+            "body-sm": ["0.8125rem", { lineHeight: "1.125rem", letterSpacing: "0.005em", fontWeight: "400" }],
+            "label-sm": ["0.75rem", { lineHeight: "1rem", letterSpacing: "0.02em", fontWeight: "500" }],
+            "headline-xl": ["2rem", { lineHeight: "2.5rem", letterSpacing: "-0.02em", fontWeight: "600" }],
+            "code-sm": ["0.8125rem", { lineHeight: "1.125rem", letterSpacing: "0em", fontWeight: "400" }],
+            "headline-lg": ["1.5rem", { lineHeight: "2rem", letterSpacing: "-0.015em", fontWeight: "600" }],
+            "body-md": ["0.875rem", { lineHeight: "1.25rem", letterSpacing: "0em", fontWeight: "400" }],
+            "headline-md": ["1.25rem", { lineHeight: "1.75rem", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "title-md": ["1.125rem", { lineHeight: "1.5rem", letterSpacing: "-0.005em", fontWeight: "500" }],
+            "title-sm": ["1rem", { lineHeight: "1.5rem", letterSpacing: "0em", fontWeight: "500" }],
+            "body-lg": ["1rem", { lineHeight: "1.5rem", letterSpacing: "0em", fontWeight: "400" }],
+            "label-md": ["0.875rem", { lineHeight: "1.25rem", letterSpacing: "0.01em", fontWeight: "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 1.125rem;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+    /* Custom Scrollbar for Windows Fluent Look */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #43474e;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #8d9199;
+    }
+  </style>
+</head>
+<body class="bg-surface-dim text-on-surface antialiased flex items-center justify-center min-h-screen p-4 sm:p-6 overflow-hidden select-none">
+<!-- Desktop Window Container Modal / Dialog Frame -->
+<div class="w-full max-w-[1040px] h-[780px] max-h-[942px] bg-surface-container rounded-xl shadow-2xl border border-outline-variant flex flex-col overflow-hidden relative backdrop-blur-md">
+<!-- TopNavBar (Shared Component) -->
+<header class="flex justify-between items-center h-10 px-3 w-full select-none bg-surface-container-low dark:bg-surface-container-low border-b border-outline-variant dark:border-outline-variant">
+<!-- Title & Branding -->
+<div class="flex items-center gap-2">
+<div class="w-5 h-5 rounded flex items-center justify-center bg-primary-container text-on-primary-container">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">pie_chart</span>
+</div>
+<span class="font-title-sm text-title-sm font-medium text-on-surface dark:text-on-surface">Disk Occupancy - Settings</span>
+</div>
+<!-- Window Control Action Buttons -->
+<div class="flex items-center h-full -mr-3">
+<button class="h-10 px-3 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-colors duration-150 active:bg-surface-container-high" title="Minimize">
+<span class="material-symbols-outlined">minimize</span>
+</button>
+<button class="h-10 px-3 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest hover:text-on-surface transition-colors duration-150 active:bg-surface-container-high" title="Maximize">
+<span class="material-symbols-outlined">check_box_outline_blank</span>
+</button>
+<button class="h-10 px-3.5 flex items-center justify-center text-on-surface-variant hover:bg-error-container hover:text-error transition-colors duration-150 active:bg-red-800" title="Close">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</header>
+<!-- Main Workspace: Split SideNav + Content Canvas -->
+<div class="flex flex-1 overflow-hidden relative">
+<!-- SideNavBar (Shared Component) -->
+<aside class="flex flex-col justify-between w-[260px] h-full p-2 bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant dark:border-outline-variant flex-shrink-0">
+<!-- Sidebar Navigation List -->
+<div class="space-y-4">
+<!-- Sidebar Header -->
+<div class="px-3 pt-2">
+<h2 class="font-title-md text-title-md font-medium text-on-surface dark:text-on-surface">Preferences</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Manage system sweeps</p>
+</div>
+<!-- Navigation Items -->
+<nav class="space-y-1">
+<!-- Active Nav Item (Deletion - Section 1 is active by default) -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-surface-container-highest dark:bg-surface-container-highest text-primary dark:text-primary font-medium border-l-2 border-primary active:scale-[0.99] transition-transform duration-100 cursor-pointer" href="#section-deletion" id="nav-deletion">
+<span class="material-symbols-outlined">delete</span>
+<span class="font-body-sm text-body-sm">Deletion</span>
+</a>
+<!-- Inactive Nav Items -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150 active:scale-[0.99] cursor-pointer" href="#section-secure-erase" id="nav-secure-erase">
+<span class="material-symbols-outlined">save_as</span>
+<span class="font-body-sm text-body-sm">Secure Erase</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150 active:scale-[0.99] cursor-pointer" href="#section-interface" id="nav-interface">
+<span class="material-symbols-outlined">tune</span>
+<span class="font-body-sm text-body-sm">Interface</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150 active:scale-[0.99] cursor-pointer" href="#section-licensing" id="nav-licensing">
+<span class="material-symbols-outlined">verified</span>
+<span class="font-body-sm text-body-sm">Licensing</span>
+</a>
+</nav>
+</div>
+<!-- Sidebar Footer Status Section -->
+<div class="pt-2 border-t border-outline-variant space-y-1">
+<div class="px-3 py-2 rounded-lg bg-surface-container flex items-center justify-between text-on-surface-variant border border-outline-variant/50">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+<span class="font-label-sm text-label-sm">Engine Idle</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline">v4.2.1</span>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined">info</span>
+<span class="font-body-sm text-body-sm">About</span>
+</a>
+</div>
+</aside>
+<!-- Scrollable Main Content Canvas -->
+<main class="flex-1 overflow-y-auto px-6 py-5 space-y-6 scroll-smooth bg-surface-container" id="content-canvas">
+<!-- SECTION 1: DELETION -->
+<section class="space-y-3" id="section-deletion">
+<!-- Card Header with Icon Badge -->
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high border border-outline-variant flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">delete</span>
+</div>
+<div>
+<h3 class="font-title-md text-title-md font-semibold text-on-surface">Deletion Behavior</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Configure default actions when files and folders are purged</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm px-2.5 py-0.5 rounded-full bg-surface-container-high border border-outline-variant text-on-surface-variant">Default Rule</span>
+</div>
+<!-- Primary Deletion Method Container Card -->
+<div class="bg-surface-container-high rounded-xl border border-outline-variant p-4 space-y-4">
+<div>
+<label class="font-label-md text-label-md font-medium text-on-surface block mb-1">Primary Deletion Method</label>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Select the default pipeline executed upon user confirmation.</p>
+</div>
+<!-- Radio Options Stack -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-2.5" role="radiogroup">
+<!-- Option 1: Permanent -->
+<label class="flex items-start gap-3 p-3 rounded-lg border border-outline-variant bg-surface-container hover:bg-surface-container-highest cursor-pointer transition-colors duration-150 group">
+<input class="mt-0.5 text-primary-container focus:ring-primary focus:ring-offset-surface-container bg-surface-container-high border-outline-variant" name="deletion_method" type="radio" value="permanent"/>
+<div class="flex-1">
+<div class="font-body-md text-body-md font-medium text-on-surface group-hover:text-primary transition-colors">Permanent</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Direct file deletion, bypasses recycle bin immediately.</div>
+</div>
+</label>
+<!-- Option 2: Automatic -->
+<label class="flex items-start gap-3 p-3 rounded-lg border border-outline-variant bg-surface-container hover:bg-surface-container-highest cursor-pointer transition-colors duration-150 group">
+<input class="mt-0.5 text-primary-container focus:ring-primary focus:ring-offset-surface-container bg-surface-container-high border-outline-variant" name="deletion_method" type="radio" value="automatic"/>
+<div class="flex-1">
+<div class="font-body-md text-body-md font-medium text-on-surface group-hover:text-primary transition-colors">Automatic</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Based on age, temporary flags, and cleanup thresholds.</div>
+</div>
+</label>
+<!-- Option 3: Recycle Bin (Default Checked) -->
+<label class="flex items-start gap-3 p-3 rounded-lg border border-primary/60 bg-surface-container-highest/60 hover:bg-surface-container-highest cursor-pointer transition-colors duration-150 group relative">
+<input checked="" class="mt-0.5 text-primary-container focus:ring-primary focus:ring-offset-surface-container bg-surface-container-high border-outline-variant" name="deletion_method" type="radio" value="recycle_bin"/>
+<div class="flex-1">
+<div class="flex items-center gap-2">
+<span class="font-body-md text-body-md font-medium text-primary">Recycle Bin</span>
+<span class="font-label-sm text-[10px] px-1.5 py-0.2 rounded bg-primary-container/40 text-primary border border-primary/30">Recommended</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Safely send removed files to Recycle Bin for secondary review.</div>
+</div>
+</label>
+<!-- Option 4: Secure shred -->
+<label class="flex items-start gap-3 p-3 rounded-lg border border-outline-variant bg-surface-container hover:bg-surface-container-highest cursor-pointer transition-colors duration-150 group">
+<input class="mt-0.5 text-primary-container focus:ring-primary focus:ring-offset-surface-container bg-surface-container-high border-outline-variant" name="deletion_method" type="radio" value="secure_shred"/>
+<div class="flex-1">
+<div class="font-body-md text-body-md font-medium text-on-surface group-hover:text-primary transition-colors">Secure shred</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Cryptographically overwrite storage blocks before deletion.</div>
+</div>
+</label>
+</div>
+<!-- Secondary Deletion Engine Row -->
+<div class="pt-3 border-t border-outline-variant">
+<label class="font-label-md text-label-md font-medium text-on-surface block mb-2">Secondary Deletion Engine</label>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+<label class="flex items-center gap-2 p-2.5 rounded-lg border border-outline-variant bg-surface-container hover:bg-surface-container-highest cursor-pointer transition-colors">
+<input checked="" class="text-primary-container focus:ring-primary bg-surface-container-high border-outline-variant" name="deletion_engine" type="radio" value="fast"/>
+<div>
+<span class="font-body-sm text-body-sm font-medium text-on-surface block">Fast multithreaded</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant">NVMe / SSD</span>
+</div>
+</label>
+<label class="flex items-center gap-2 p-2.5 rounded-lg border border-outline-variant bg-surface-container hover:bg-surface-container-highest cursor-pointer transition-colors">
+<input class="text-primary-container focus:ring-primary bg-surface-container-high border-outline-variant" name="deletion_engine" type="radio" value="native"/>
+<div>
+<span class="font-body-sm text-body-sm font-medium text-on-surface block">Windows native</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant">Shell API</span>
+</div>
+</label>
+<label class="flex items-center gap-2 p-2.5 rounded-lg border border-outline-variant bg-surface-container hover:bg-surface-container-highest cursor-pointer transition-colors">
+<input class="text-primary-container focus:ring-primary bg-surface-container-high border-outline-variant" name="deletion_engine" type="radio" value="compatibility"/>
+<div>
+<span class="font-body-sm text-body-sm font-medium text-on-surface block">Compatibility</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant">NAS &amp; Removable</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Administrative Elevation Checkbox -->
+<div class="pt-3 border-t border-outline-variant">
+<label class="flex items-center justify-between p-2 rounded-lg hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-3">
+<input class="rounded w-4 h-4 text-primary-container bg-surface-container border-outline-variant focus:ring-primary" id="admin-elevate" type="checkbox"/>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-base" style="font-variation-settings: 'FILL' 1;">shield</span>
+<span class="font-body-md text-body-md text-on-surface">Delete protected items as administrator (asks once)</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface p-1 rounded hover:bg-surface-container-highest transition-colors" title="Bypasses standard UAC prompt for batch directory permissions" type="button">
+<span class="material-symbols-outlined text-[18px]">help</span>
+</button>
+</label>
+</div>
+</div>
+</section>
+<!-- SECTION 2: SECURE ERASE -->
+<section class="space-y-3" id="section-secure-erase">
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high border border-outline-variant flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">save_as</span>
+</div>
+<div>
+<h3 class="font-title-md text-title-md font-semibold text-on-surface">Secure Erase</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Cryptographic sanitation standards and block scrubbing</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm px-2.5 py-0.5 rounded-full bg-surface-container-high border border-outline-variant text-on-surface-variant">DoD 5220.22-M</span>
+</div>
+<div class="bg-surface-container-high rounded-xl border border-outline-variant p-4 space-y-4">
+<!-- Overwrite Passes Stepper Control -->
+<div class="flex items-center justify-between gap-4 p-3 rounded-lg bg-surface-container border border-outline-variant">
+<div>
+<span class="font-body-md text-body-md font-medium text-on-surface block">Number of overwrite passes</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">3 passes (DoD 5220.22-M / NIST 800-88 compliant zero/pseudo-random fill)</span>
+</div>
+<!-- Stepper input -->
+<div class="flex items-center gap-2 bg-surface-container-high border border-outline-variant rounded-lg p-1">
+<button class="w-8 h-8 flex items-center justify-center rounded bg-surface-container hover:bg-surface-container-highest text-on-surface active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-base">remove</span>
+</button>
+<span class="font-code-sm text-code-sm font-semibold w-8 text-center text-primary">3</span>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-surface-container hover:bg-surface-container-highest text-on-surface active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-base">add</span>
+</button>
+</div>
+</div>
+<!-- SSD Wear Caveat Callout Banner -->
+<div class="rounded-lg p-3 bg-amber-950/20 border border-amber-600/30 flex items-start gap-3">
+<span class="material-symbols-outlined text-amber-400 mt-0.5 flex-shrink-0" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div class="font-body-sm text-body-sm text-amber-200/90 leading-relaxed">
+<span class="font-semibold text-amber-300">SSD Wear Caveat:</span> Multiple erase passes are unnecessary on flash storage (SSDs) and increase NAND write wear. For SSDs, hardware TRIM is recommended.
+              </div>
+</div>
+<!-- TRIM Drive Optimizer Checkbox -->
+<label class="flex items-center justify-between p-2 rounded-lg hover:bg-surface-container cursor-pointer transition-colors">
+<div class="flex items-center gap-3">
+<input checked="" class="rounded w-4 h-4 text-primary-container bg-surface-container border-outline-variant focus:ring-primary" type="checkbox"/>
+<div>
+<span class="font-body-md text-body-md font-medium text-on-surface block">Run drive optimizer (TRIM) afterwards</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Sends ATA/NVMe deallocate commands to reclaim raw unwritten blocks</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface p-1 rounded hover:bg-surface-container-highest transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">help</span>
+</button>
+</label>
+</div>
+</section>
+<!-- SECTION 3: INTERFACE -->
+<section class="space-y-3" id="section-interface">
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high border border-outline-variant flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">tune</span>
+</div>
+<div>
+<h3 class="font-title-md text-title-md font-semibold text-on-surface">Interface &amp; Ergonomics</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Pointer gestures, directory navigation, and inspection tooltips</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-high rounded-xl border border-outline-variant p-4 space-y-4">
+<div>
+<label class="font-label-md text-label-md font-medium text-on-surface block mb-1">Single-click behavior</label>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Choose how the primary visualizer reacts to individual file tree mouse selections.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3" role="radiogroup">
+<label class="flex items-start justify-between p-3 rounded-lg border border-outline-variant bg-surface-container hover:bg-surface-container-highest cursor-pointer transition-colors group">
+<div class="flex items-start gap-3">
+<input checked="" class="mt-0.5 text-primary-container focus:ring-primary bg-surface-container-high border-outline-variant" name="click_behavior" type="radio" value="mark"/>
+<div>
+<span class="font-body-md text-body-md font-medium text-on-surface group-hover:text-primary transition-colors">Mark items for deletion</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Single click toggles selection for bulk cleanup operations.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface text-[18px] ml-2" title="Best for batch disk pruning">help</span>
+</label>
+<label class="flex items-start justify-between p-3 rounded-lg border border-outline-variant bg-surface-container hover:bg-surface-container-highest cursor-pointer transition-colors group">
+<div class="flex items-start gap-3">
+<input class="mt-0.5 text-primary-container focus:ring-primary bg-surface-container-high border-outline-variant" name="click_behavior" type="radio" value="expand"/>
+<div>
+<span class="font-body-md text-body-md font-medium text-on-surface group-hover:text-primary transition-colors">Navigate &amp; expand</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Single click drills down into folder hierarchy immediately.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface text-[18px] ml-2" title="Exploratory hierarchy viewing">help</span>
+</label>
+</div>
+</div>
+</section>
+<!-- SECTION 4: LICENSING -->
+<section class="space-y-3 pb-2" id="section-licensing">
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high border border-outline-variant flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">verified</span>
+</div>
+<div>
+<h3 class="font-title-md text-title-md font-semibold text-on-surface">Licensing &amp; Entitlements</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Workstation tier, maintenance agreements, and machine authorization</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-high rounded-xl border border-outline-variant p-4">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3.5 rounded-lg bg-surface-container border border-outline-variant">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="font-body-md text-body-md font-semibold text-on-surface">Current Edition: Disk Occupancy Professional (v4.2)</span>
+<span class="px-2 py-0.5 text-[11px] font-medium rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Active
+                  </span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="font-code-sm text-code-sm">HWID-8821-XP9</span>
+<span class="text-outline">•</span>
+<span class="font-body-sm text-body-sm">Perpetual Commercial License</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3.5 py-1.5 rounded-lg bg-surface-container-highest hover:bg-surface-bright text-on-surface font-label-md text-label-md border border-outline-variant transition-colors active:scale-95" type="button">
+                  Manage License
+                </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer (Shared Component) -->
+<footer class="sticky bottom-0 w-full flex justify-between items-center px-6 py-3 bg-surface-container-low dark:bg-surface-container-low z-30 border-t border-outline-variant dark:border-outline-variant select-none">
+<!-- Left: Reset link -->
+<button class="flex items-center gap-2 font-label-md text-label-md text-on-surface-variant hover:text-on-surface px-2.5 py-1.5 rounded-lg hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors duration-150 active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+<span>Restore defaults</span>
+</button>
+<!-- Right: Action Buttons (Cancel & Save) -->
+<div class="flex items-center gap-3">
+<button class="px-4 py-1.5 rounded-lg bg-surface-container-high border border-outline-variant text-on-surface font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-surface-container-highest transition-colors duration-150 active:scale-[0.98]" type="button">
+          Cancel
+        </button>
+<button class="px-5 py-1.5 rounded-lg bg-primary-container hover:bg-[#4a75a8] text-white font-label-md text-label-md border border-white/10 shadow-sm transition-colors duration-150 active:scale-[0.98] flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]">check</span>
+<span>Save</span>
+</button>
+</div>
+</footer>
+</div>
+<script>
+    // Simple active tab highlighter on SideNavBar clicking
+    const navItems = [
+      { id: 'nav-deletion', target: 'section-deletion' },
+      { id: 'nav-secure-erase', target: 'section-secure-erase' },
+      { id: 'nav-interface', target: 'section-interface' },
+      { id: 'nav-licensing', target: 'section-licensing' }
+    ];
+
+    navItems.forEach(item => {
+      const el = document.getElementById(item.id);
+      if (el) {
+        el.addEventListener('click', (e) => {
+          navItems.forEach(other => {
+            const otherEl = document.getElementById(other.id);
+            if (otherEl) {
+              otherEl.className = "flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-high dark:hover:bg-surface-container-high transition-colors duration-150 active:scale-[0.99] cursor-pointer";
+            }
+          });
+          el.className = "flex items-center gap-3 px-3 py-2 rounded-lg bg-surface-container-highest dark:bg-surface-container-highest text-primary dark:text-primary font-medium border-l-2 border-primary active:scale-[0.99] transition-transform duration-100 cursor-pointer";
+        });
+      }
+    });
+  </script>
+</body></html>
