@@ -1,0 +1,38 @@
+.gitignore
+  h_30b36d78271bb4 8-11
+packaging/installer.nsi
+  h_30b36d78271bb4 3,5-9,15,33
+packaging/disk_occupancy.spec
+  h_30b36d78271bb4 8
+packaging/appxmanifest.xml
+  h_30b36d78271bb4 3-5,20-22
+packaging/disk_occupancy_onedir.spec
+  h_30b36d78271bb4 9
+README.md
+  h_30b36d78271bb4 1-128
+LICENSE-Qt-LGPL.txt
+  s_c9ab3f16be45a1::t_f9a7423fa10a68 1-12
+LICENSE.txt
+  s_c9ab3f16be45a1::t_53dd736c3f7dc8 1-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fbd441f91bd55b353b40661d173c03559e405391",
+  "prompts": {},
+  "humans": {
+    "h_30b36d78271bb4": {
+      "author": "Robin L. M. Cheung, MBA <robin@robin.mba>"
+    }
+  },
+  "sessions": {
+    "s_c9ab3f16be45a1": {
+      "agent_id": {
+        "tool": "devin",
+        "id": "s_c9ab3f16be45a1",
+        "model": "unknown"
+      },
+      "human_author": "Robin L. M. Cheung, MBA <robin@robin.mba>"
+    }
+  }
+}
