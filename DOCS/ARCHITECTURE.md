@@ -239,22 +239,33 @@ license: Help -> License… -> _license_dialog (machine_hash shown for
   reclaimable categories with sizes, checkboxes, and one Reclaim
   button. Pro-gated (it is a delete-class operation, AD-3).
 
-  *Elevation foundation (one UAC per session).* System-owned targets
-  cannot be deleted unelevated — `Windows.old`, `C:\Windows\Temp`,
-  SoftwareDistribution, WinSxS, hiberfil all require admin, and the
-  silent/automated cleanup handlers require it too. Design: UAC fires
-  once — either when the user enables "Allow administrator actions
-  this session" (`allowElevate`, persisted but resets per session —
-  the checkbox itself triggers the prompt so consent and elevation
-  are the same gesture) or on the first reclaim/delete that needs
-  it. Elevated work is dispatched to a single cached elevated
-  channel for the rest of the session: primary = elevated
-  `IFileOperation`/`ShellExecute` via the COM elevation moniker
+  *Elevation foundation (persisted default drives UAC timing).*
+  System-owned targets cannot be deleted unelevated —
+  `Windows.old`, `C:\Windows\Temp`, SoftwareDistribution, WinSxS,
+  hiberfil all require admin, and the silent/automated cleanup
+  handlers require it too. `allowElevate` is a persisted Settings
+  checkbox AND the override of the per-session rule:
+
+  - `allowElevate` ON (persisted): at launch the app treats the
+    setting as the checked-box gesture — UAC fires immediately at
+    startup, the elevated channel is established once, and every
+    privileged op runs silently for the session. The user never
+    re-checks anything; the setting IS the standing consent.
+  - `allowElevate` OFF/never set: checking the box mid-session
+    fires UAC at that moment (consent and elevation are the same
+    gesture); declined UAC reverts the box. Ops needing admin
+    while unchecked are marked "needs administrator", not blocked
+    silently.
+
+  Mechanism: a single cached elevated channel per session —
+  primary = elevated `IFileOperation`/`ShellExecute` via the COM
+  elevation moniker
   (`Elevation:Administrator!new:{3AD05575-8857-4850-9277-11B85BDB8E09}`);
   fallback = a persistent `runas` helper process (same exe,
   `--elevated-worker`, named-pipe job/result protocol, random
-  pipe name). If UAC is declined the checkbox reverts and affected
-  rows are marked "needs administrator". Admin still ≠
+  pipe name). Windows mandates one UAC per elevation event — the
+  persisted setting controls WHEN it fires (launch vs. checkbox
+  click), never how many times Windows asks. Admin still ≠
   TrustedInstaller — the tier list below is ordered so the OS's own
   handlers (which carry the right ownership/ACL logic) run first.
 

@@ -153,8 +153,10 @@ seconds-not-minutes full-disk scans.
   $Windows.~BT/~WS/ESD, recycle bins, temp dirs, Update cache,
   Delivery Optimization, memory dumps, WinSxS cleanup, hibernation
   opt-in) with per-row size + safe/admin/functional-change badge.
-  Elevation foundation: one UAC per session via `allowElevate`
-  checkbox (the gesture IS the prompt) → cached elevated
+  Elevation foundation: persisted `allowElevate` overrides the
+  per-session rule — ON = UAC fires at launch (setting IS the
+  standing consent); OFF = checkbox click mid-session fires UAC
+  (consent = elevation gesture), decline reverts. Cached elevated
   IFileOperation channel, runas-helper fallback. Windows.old
   tiers: cleanmgr /AUTOCLEAN or SilentCleanup task (default) →
   elevated takeown/icacls + engine (labeled last resort) →
