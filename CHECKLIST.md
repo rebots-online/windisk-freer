@@ -127,8 +127,16 @@ seconds-not-minutes full-disk scans.
   works. Fix: `_has_recycle_bin` probe → no-bin volumes go straight to a
   "delete PERMANENTLY" confirm; batch delete gets the permanent fallback
   it was missing; items failing both stay checked and are reported.
-  Compiles; NOT yet rebuilt — holding for operator signoff on AD-2 +
-  AD-6 artifact-naming deviation before `build-release.ps1` runs.
+  Compiles; shipped in `1.3.54736` / `1.6.54756` artifacts.
+- ✅ Flat `dist/` four-artifact pipeline (AD-6): `build-release.ps1`
+  produces `windisk-freer-v<ver>-win64.exe`, `-win64-nsis.exe`,
+  `-win64.msi`, `-win64.msix` DIRECTLY in `dist/` — flat, no
+  subfolders, no temp artifact dirs, intermediates under `build/`.
+  `dist/` is never cleared (rule added); stale versions accumulate by
+  design. MSI via WiX 7 (`dotnet tool install -g wix`,
+  `wix eula accept wix7` for OSMF), `MediaTemplate/@EmbedCab` so no
+  loose `cab1.cab`, `-pdbtype none` so no `.wixpdb`. Verified at
+  `1.6.54756`: all four artifacts present, MSI 46.5 MB self-contained.
 - [ ] AD-10 (proposed, needs signoff): delete becomes two persisted
   QSettings — `deleteMode` (permanent|auto|recycle|shred, default
   `permanent` — recycle frees no space; auto = recycle iff

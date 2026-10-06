@@ -1,6 +1,6 @@
 ; NSIS installer — Disk Occupancy
 ; Build: makensis installer.nsi   (run from packaging\ dir)
-; Produces: ..\dist\installer\Disk Occupancy-0.1.53003-setup.exe
+; Produces: ..\dist\windisk-freer-v<version.txt>-win64-nsis.exe
 !define APPNAME "Disk Occupancy"
 ; Stamped output — version comes from version.txt (written by
 ; scripts/update-version.ps1 during build-release.ps1); never hand-edit.
@@ -12,7 +12,8 @@
 
 Unicode true
 Name "${APPNAME}"
-OutFile "..\dist\installer\${APPNAME}-${APPVERSION}-setup.exe"
+; AD-6 slug-first release naming, flat in dist\: windisk-freer-v<ver>-win64-nsis.exe
+OutFile "..\dist\windisk-freer-v${APPVERSION}-win64-nsis.exe"
 InstallDir "$LOCALAPPDATA\Programs\${APPNAME}"
 RequestExecutionLevel user          ; per-user install — no UAC prompt
 SetCompressor /SOLID lzma
@@ -30,7 +31,7 @@ SetCompressor /SOLID lzma
 
 Section "Install"
     SetOutPath "$INSTDIR"
-    File "..\dist\${APPEXE}"
+    File "..\build\onefile\${APPEXE}"
     ; LGPL/Qt notices + product license ship alongside the binary
     File /nonfatal "..\LICENSE.txt"
     File /nonfatal "..\LICENSE-Qt-LGPL.txt"

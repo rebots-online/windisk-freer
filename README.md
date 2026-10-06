@@ -63,40 +63,38 @@ stamper):
 ## Build
 
 The full release pipeline is one command — it stamps the version, then
-builds all three deliverables:
+builds all four deliverables **flat into `dist/`** (the tracked release
+surface — it is never cleared; each version's artifacts accumulate):
 
 ```
 powershell -File scripts\build-release.ps1
 ```
 
-### Standalone exe — `dist\DiskOccupancy.exe`
+Artifacts (AD-6 slug-first names):
 
-```
-python -m PyInstaller packaging\disk_occupancy.spec --clean --noconfirm --distpath dist --workpath build
-```
+| Artifact | File |
+|---|---|
+| Standalone exe | `dist\windisk-freer-v<ver>-win64.exe` |
+| NSIS installer | `dist\windisk-freer-v<ver>-win64-nsis.exe` |
+| MSI installer | `dist\windisk-freer-v<ver>-win64.msi` |
+| MSIX (Store) | `dist\windisk-freer-v<ver>-win64.msix` |
 
-One-file, windowed (no console), version resource embedded.
+Intermediates (`build\onefile`, `build\msix`, `build\msix-work`) stay in
+the gitignored `build/` dir. MSI requires WiX (`dotnet tool install -g
+wix`; the script passes `--acceptEula` — accepts the WiX OSMF EULA per
+invocation, see wixtoolset.org/osmf).
 
-### NSIS installer — `dist\installer\Disk Occupancy-<ver>-setup.exe`
-
-```
-cd packaging
-"C:\Program Files (x86)\NSIS\Bin\makensis.exe" installer.nsi
-```
+### NSIS details
 
 Per-user install to `%LOCALAPPDATA%\Programs` (no UAC), Add/Remove
 Programs entry, desktop + Start Menu shortcuts, uninstaller.
 
-### MSIX (Microsoft Store) — `dist\installer\DiskOccupancy-<ver>.msix`
+### MSIX (Microsoft Store) details
 
-```
-python -m PyInstaller packaging\disk_occupancy_onedir.spec --clean --noconfirm --distpath build\msix --workpath build\msix-work
-python scripts\make-msix-assets-d20261005.py
-rem copy packaging\appxmanifest.xml -> build\msix\DiskOccupancy\AppxManifest.xml
-rem copy build\msix-assets\*.png -> build\msix\DiskOccupancy\Assets\
-makeappx pack /d build\msix\DiskOccupancy /p dist\installer\DiskOccupancy-<ver>.msix
-signtool sign /fd SHA256 /f build\msix-cert\DiskOccupancy-dev.pfx /p <pw> dist\installer\DiskOccupancy-<ver>.msix
-```
+The pipeline stages `packaging\appxmanifest.xml` (version stamped into
+`Identity/@Version`) + `build\msix-assets\*.png` + licenses onto the
+onedir payload, then `makeappx pack` + `signtool sign` →
+`dist\windisk-freer-v<ver>-win64.msix`.
 
 The included manifest uses `runFullTrust` (desktop bridge) so packaged
 scans keep working. For **sideloading**, the MSIX is signed with the dev

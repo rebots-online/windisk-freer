@@ -1,12 +1,9 @@
-
 # REMINDER FROM OPERATOR: 
  
- - IMPORTANT!! s
  - always follow the central dev dogma, kstore reminder directives, and Admin-Manual
  - Step 1: Propose a new @DOCS/ARCHITECTURE.md and open in editor for operator signoff
  - Step 2: transform the approved ARCHITECTURE.md -> recipe in the form of a CHECKLIST.md comprising self-contained four-state [ ] Tasks sufficiently-detailed that a coding subagent does not need to examine the codebase to code it, then present in editor for operator signoff; 
  - your turn is not complete until all kstore reminders in in context injected during this turn have been resolved
-
 
 # windisk-freer — Architecture
 
@@ -136,7 +133,7 @@ license: Help -> License… -> _license_dialog (machine_hash shown for
 | `verify-licensing.py` | repo root | offscreen verifier: CC7 string, license roundtrip, menu structure |
 | `packaging/disk_occupancy.spec` | `packaging/` | PyInstaller onefile windowed spec → `packaging/dist/` |
 | `packaging/installer.{iss,nsi}`, `appxmanifest.xml`, `version_info.txt`, `disk_occupancy_onedir.spec` | `packaging/` | installer/metadata scaffold |
-| `dist/` | repo root (gitignored) | release artifacts: `DiskOccupancy.exe`, `installer/Disk Occupancy-<ver>-setup.exe`, `installer/DiskOccupancy-<ver>.msix` + dev `.cer`. ⚠ deviates from AD-6's tracked slug-first scheme — naming pending signoff |
+| `dist/` | repo root (TRACKED, flat, never cleared) | release artifacts, slug-first `windisk-freer-v<ver>-win64-<tech>.<ext>` (exe/nsis/msi/msix); sole binary surface |
 
 ## 5. Decisions
 
@@ -164,13 +161,16 @@ license: Help -> License… -> _license_dialog (machine_hash shown for
 - **AD-5** Standard menubar `File | Edit | View | Help`; About carries
   copyright + license + version+build; `v<version.txt>` bottom-right of
   status bar and on the splash (CC7 — nothing appended).
-- **AD-6** Release artifacts: repo-root `dist/`; filenames are
-  `windisk-freer-v<MAJOR.MINOR.BUILD>-<platform-qualifier>`; PyInstaller
-  intermediates stay in `build/` (gitignored disposable zone).
-  ⚠ CURRENT STATE deviates: `dist/` is gitignored and artifacts use
-  `Disk Occupancy-<ver>-setup.exe` / `DiskOccupancy-<ver>.msix` /
-  `DiskOccupancy.exe`. Either rename outputs to the slug-first scheme or
-  amend this decision — pending signoff.
+- **AD-6** Release artifacts: repo-root `dist/` is FLAT and NEVER
+  CLEARED — no subfolders, no temp dirs, no pruning; each release's
+  artifacts accumulate as the release history. Filenames are slug-first
+  `windisk-freer-v<MAJOR.MINOR.BUILD>-win64-<tech>.<ext>`:
+  `-win64.exe` (standalone), `-win64-nsis.exe` (NSIS),
+  `-win64.msi` (WiX 7 via dotnet tool, cab embedded via
+  `MediaTemplate/@EmbedCab`, `-pdbtype none`), `-win64.msix`
+  (makeappx + signtool). Installer-tech qualifier is mandatory.
+  Intermediates live only in `build/` (gitignored disposable zone:
+  `onefile/`, `msix/`, `msix-work/`).
 - **AD-8** Selection model: `Node.check` tri-state; cascade down sets the
   whole subtree, cascade up resolves ancestors to
   Checked/PartiallyChecked/Unchecked; `effective_checked()` returns
