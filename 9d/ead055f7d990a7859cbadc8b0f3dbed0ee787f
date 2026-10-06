@@ -1,0 +1,16 @@
+disk_occupancy.py
+  h_30b36d78271bb4 56
+CHECKLIST.md
+  h_30b36d78271bb4 164-171
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9dead055f7d990a7859cbadc8b0f3dbed0ee787f",
+  "prompts": {},
+  "humans": {
+    "h_30b36d78271bb4": {
+      "author": "Robin L. M. Cheung, MBA <robin@robin.mba>"
+    }
+  }
+}
